@@ -1,4 +1,3 @@
-# demooo
 graph LR
     subgraph "IoT/Edge Layer"
         Device[Sensor/Device] -->|MQTT| Broker(MQTT Broker)
