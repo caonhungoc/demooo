@@ -1,3 +1,4 @@
+```mermaid
 graph LR
     subgraph "IoT/Edge Layer"
         Device["Sensor/Device"] <-->|MQTT Pub/Sub| Broker("MQTT Broker")
