@@ -1,36 +1,30 @@
-```mermaid
 graph LR
-    subgraph "IoT/Edge Layer"
-        Device["Sensor/Device"] <-->|MQTT Pub/Sub| Broker("MQTT Broker")
-        Broker <-->|Pub/Sub| Gateway["IoT Gateway Service<br/>(Go)"]
+    subgraph Edge ["IoT/Edge Layer"]
+        Device["Sensor/Device"] <-->|MQTT| Broker("MQTT Broker")
+        Broker <-->|Sub/Pub| Gateway["IoT Gateway (Go)"]
         Gateway <-->|Cache/ACL| Redis[("Redis")]
-        Gateway -->|Store Raw Data| Mongo[("MongoDB")]
+        Gateway -->|Store Raw| Mongo[("MongoDB")]
     end
 
-    %% Luồng dữ liệu Sensor đi lên
-    Gateway ==>|Pub Sensor Data| NATS(("NATS Message Broker"))
-    
-    %% Luồng lệnh điều khiển đi xuống (Nét đứt)
+    Gateway ==>|Pub Data| NATS(("NATS Broker"))
     NATS -.->|Sub Cmd| Gateway
 
-    subgraph "Backend Services Layer"
-        NATS ==>|Sub Sensor Data| Farm["Farm Management Service<br/>(Go)"]
+    subgraph Backend ["Backend Services"]
+        NATS ==>|Sub Data| Farm["Farm Mgmt (Go)"]
         Farm -.->|Pub Cmd| NATS
-        Farm -->|Store Time-series| Influx[("InfluxDB")]
+        Farm -->|Store Metric| Influx[("InfluxDB")]
         
-        NATS -->|Sub Events| Noti["Notification Service<br/>(NestJS)"]
-        Noti -->|Send| Email["Email/SMS Provider"]
+        NATS -->|Sub Event| Noti["Notification (NestJS)"]
+        Noti -->|Send| Email["Email/SMS"]
         
-        NATS -->|Sub Events| Socket["Real-time Socket Service<br/>(NestJS)"]
-        Socket -->|WebSocket| FE["Frontend App<br/>(Web/Mobile)"]
+        NATS -->|Sub Event| Socket["Socket Service (NestJS)"]
+        Socket -->|WS| FE["Frontend App"]
     end
-
-    classDef go fill:#00ADD8,stroke:#333,stroke-width:2px,color:white;
-    classDef nodejs fill:#E0234E,stroke:#333,stroke-width:2px,color:white;
-    classDef db fill:#4DB33D,stroke:#333,stroke-width:2px,color:white;
-    classDef nats fill:#27AAE1,stroke:#333,stroke-width:4px,color:white;
+    
+    classDef go fill:#00ADD8,stroke:#fff,stroke-width:2px,color:white;
+    classDef js fill:#E0234E,stroke:#fff,stroke-width:2px,color:white;
+    classDef db fill:#4DB33D,stroke:#fff,stroke-width:2px,color:white;
     
     class Gateway,Farm go;
-    class Noti,Socket nodejs;
+    class Noti,Socket js;
     class Redis,Mongo,Influx db;
-    class NATS nats;
