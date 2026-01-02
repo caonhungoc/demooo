@@ -1,3 +1,4 @@
+```mermaid
 graph LR
     subgraph Edge ["IoT/Edge Layer"]
         Device["Sensor/Device"] <-->|MQTT| Broker("MQTT Broker")
@@ -28,3 +29,4 @@ graph LR
     class Gateway,Farm go;
     class Noti,Socket js;
     class Redis,Mongo,Influx db;
+```
